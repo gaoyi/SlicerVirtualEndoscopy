@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <executable>
-  <category>Examples</category>
-  <title>SegmentLumenFromAxis</title>
-  <description><![CDATA[This is a CLI module that can be bundled in an extension]]></description>
+  <category>VirtualEndoscopy</category>
+  <title>Segment Lumen From Axis</title>
+  <description><![CDATA[This is a CLI module that segment the lumen from the binary image representation of its axis]]></description>
   <version>0.0.1</version>
-  <documentation-url>https://github.com/username/project</documentation-url>
+  <documentation-url>https://github.com/gaoyi/VirtualEndoscopy</documentation-url>
   <license>Slicer</license>
-  <contributor>FirstName LastName (Institution), FirstName LastName (Institution)</contributor>
-  <acknowledgements>This work was partially funded by NIH grant NXNNXXNNNNNN-NNXN</acknowledgements>
+  <contributor>Yi Gao(Shenzhen University), Haofan Huang (Shenzhen University)</contributor>
+  <acknowledgements>This work is partially suppored by the Key-Area Research and Development Program of Guangdong Province grant 2021B0101420005, the Key Technology Development Program of Shenzhen grant JSGG20210713091811036, the Department of Education of Guangdong Province grant 2017KZDXM072, the National Natural Science Foundation of China grant 61601302, the Shenzhen Key Laboratory Foundation grant ZDSYS20200811143757022, the Shenzhen Peacock Plan grant KQTD2016053112051497, and the SZU Top Ranking Project grant 86000000210.</acknowledgements>
   <parameters>
     <label>IO</label>
     <description><![CDATA[Input/output parameters]]></description>
