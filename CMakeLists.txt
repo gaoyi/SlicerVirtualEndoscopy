@@ -17,6 +17,19 @@ set(EXTENSION_DEPENDS "NA") # Specified as a list or "NA" if no dependencies
 find_package(Slicer REQUIRED)
 include(${Slicer_USE_FILE})
 
+#--------------------------------------------------------------------------------
+# find GTH818N path
+set(GTH818N_PATH Libs/gth818n/)
+
+include_directories(${GTH818N_PATH})
+
+#--------------------------------------------------------------------------------
+# my libs
+add_library(GTH818N_LIBRARIES
+  ${GTH818N_PATH}/fibheap.cpp
+  )
+
+
 #-----------------------------------------------------------------------------
 # Extension modules
 add_subdirectory(VirtualEndoscopy)

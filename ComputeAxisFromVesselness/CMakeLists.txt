@@ -29,12 +29,14 @@ include(${ITK_USE_FILE})
 
 #-----------------------------------------------------------------------------
 set(MODULE_INCLUDE_DIRECTORIES
+  ../Libs/gth818n/
   )
 
 set(MODULE_SRCS
   )
 
 set(MODULE_TARGET_LIBRARIES
+  GTH818N_LIBRARIES
   ${ITK_LIBRARIES}
   )
 

@@ -11,27 +11,48 @@
   <parameters>
     <label>IO</label>
     <description><![CDATA[Input/output parameters]]></description>
-    <double>
-      <name>sigma</name>
-      <longflag>sigma</longflag>
-      <flag>s</flag>
-      <label>Sigma</label>
-      <description><![CDATA[A double value (in units of mm) passed to the algorithm]]></description>
-      <default>1.0</default>
-    </double>
-    <image>
+    <image type="scalar">
       <name>inputVolume</name>
       <label>Input Volume</label>
       <channel>input</channel>
       <index>0</index>
       <description><![CDATA[Input volume]]></description>
     </image>
-    <image>
-      <name>outputVolume</name>
-      <label>Output Volume</label>
-      <channel>output</channel>
+    <image type="label">
+      <name>inputAxisLabelVolume</name>
+      <label>Input Axis Label Volume</label>
+      <channel>input</channel>
       <index>1</index>
-      <description><![CDATA[Output Volume]]></description>
+      <description><![CDATA[Input Axis Label volume]]></description>
     </image>
+    <double>
+      <name>lowerThreshold</name>
+      <longflag>lowerThresholdValue</longflag>
+      <flag>t</flag>
+      <description><![CDATA[Regions with intensity below this will be removed.]]></description>
+      <label>Lower intensiity threshold</label>
+      <default>0</default>
+    </double>
+    <double>
+      <name>calcificationThreshold</name>
+      <longflag>calcificationThresholdValue</longflag>
+      <flag>v</flag>
+      <description><![CDATA[Regions Brighter than this HU will be removed.]]></description>
+      <label>Calcification Threshold Value</label>
+      <default>800</default>
+    </double>
+    <image type="label" reference="inputVolume">
+      <name>outputLumenMaskVolume</name>
+      <label>Output Lumen Mask Volume</label>
+      <channel>output</channel>
+      <index>2</index>
+      <description><![CDATA[Output Lumen Mask Volume]]></description>
+    </image>
+    <boolean>
+      <name>superResolution</name>
+      <label>Perform Super-resolution segmentation?</label>
+      <flag>s</flag>
+      <default>false</default>
+    </boolean>
   </parameters>
 </executable>

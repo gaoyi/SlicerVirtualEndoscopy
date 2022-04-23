@@ -11,27 +11,26 @@
   <parameters>
     <label>IO</label>
     <description><![CDATA[Input/output parameters]]></description>
-    <double>
-      <name>sigma</name>
-      <longflag>sigma</longflag>
-      <flag>s</flag>
-      <label>Sigma</label>
-      <description><![CDATA[A double value (in units of mm) passed to the algorithm]]></description>
-      <default>1.0</default>
-    </double>
-    <image>
-      <name>inputVolume</name>
-      <label>Input Volume</label>
+    <image type="scalar">
+      <name>inputVesselnessVolume</name>
+      <label>Input Vesselness Volume</label>
       <channel>input</channel>
       <index>0</index>
-      <description><![CDATA[Input volume]]></description>
+      <description><![CDATA[Input Vesselness volume]]></description>
     </image>
-    <image>
-      <name>outputVolume</name>
-      <label>Output Volume</label>
+    <point multiple="true" coordinateSystem="lps">
+      <name>fiducialsAlongCA</name>
+      <label>Points along CA</label>
+      <longflag>--ptAlongCA</longflag>
+      <description><![CDATA[A list of fiducial points along the coronary artery.]]></description>
+      <default>0,0,0</default>
+    </point>
+    <image type="label" reference="inputVesselnessVolume">
+      <name>outputAxisMaskVolume</name>
+      <label>Output Axis Mask Volume</label>
       <channel>output</channel>
       <index>1</index>
-      <description><![CDATA[Output Volume]]></description>
+      <description><![CDATA[Output Axis Mask Volume]]></description>
     </image>
   </parameters>
 </executable>
