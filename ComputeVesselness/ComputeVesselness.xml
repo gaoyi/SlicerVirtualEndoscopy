@@ -1,16 +1,43 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <executable>
   <category>Examples</category>
-  <title>ComputeVesselness</title>
-  <description><![CDATA[This is a CLI module that can be bundled in an extension]]></description>
+  <title>Compute Vesselness Image</title>
+  <description><![CDATA[This is a CLI module that computes the vessleness.]]></description>
   <version>0.0.1</version>
-  <documentation-url>https://github.com/username/project</documentation-url>
+  <documentation-url>https://github.com/gaoyi/VirtualEndoscopy</documentation-url>
   <license>Slicer</license>
-  <contributor>FirstName LastName (Institution), FirstName LastName (Institution)</contributor>
-  <acknowledgements>This work was partially funded by NIH grant NXNNXXNNNNNN-NNXN</acknowledgements>
+  <contributor>Yi Gao(Shenzhen University), Haofan Huang (Shenzhen University)</contributor>
+  <acknowledgements>This work is partially suppored by the Key-Area Research and Development Program of Guangdong Province grant 2021B0101420005, the Key Technology Development Program of Shenzhen grant JSGG20210713091811036, the
+Department of Education of Guangdong Province grant 2017KZDXM072, the National Natural Science Foundation of China grant 61601302, the Shenzhen Key Laboratory Foundation grant ZDSYS20200811143757022, the
+Shenzhen Peacock Plan grant KQTD2016053112051497, and the SZU Top Ranking Project grant 86000000210.</acknowledgements>
   <parameters>
     <label>IO</label>
     <description><![CDATA[Input/output parameters]]></description>
+    <image type="scalar">
+      <name>inputVolume</name>
+      <label>Input Volume</label>
+      <channel>input</channel>
+      <index>0</index>
+      <description><![CDATA[Input volume]]></description>
+    </image>
+    <boolean>
+      <name>vesselIsBrighter</name>
+      <longflag>vesselIsBrighter</longflag>
+      <flag>v</flag>
+      <label>Is vessel brighter?</label>
+      <description><![CDATA[Is the vessel brighter than surroundings?]]></description>
+      <default>True</default>
+    </boolean>
+    <image type="scalar" reference="inputVolume">
+      <name>outputVesselnessVolume</name>
+      <label>VesselnessMetricVolume</label>
+      <channel>output</channel>
+      <index>1</index>
+      <description><![CDATA[Output Vesselness Volume]]></description>
+    </image>
+  </parameters>
+  <parameters advanced="true">
+    <label>Advance parameters. Danger! T. Rex Patrolling</label>
     <double>
       <name>sigma</name>
       <longflag>sigma</longflag>
@@ -19,19 +46,29 @@
       <description><![CDATA[A double value (in units of mm) passed to the algorithm]]></description>
       <default>1.0</default>
     </double>
-    <image>
-      <name>inputVolume</name>
-      <label>Input Volume</label>
-      <channel>input</channel>
-      <index>0</index>
-      <description><![CDATA[Input volume]]></description>
-    </image>
-    <image>
-      <name>outputVolume</name>
-      <label>Output Volume</label>
-      <channel>output</channel>
-      <index>1</index>
-      <description><![CDATA[Output Volume]]></description>
-    </image>
+    <double>
+      <name>alpha1</name>
+      <longflag>alpha1</longflag>
+      <flag>a</flag>
+      <label>Alpha1</label>
+      <description><![CDATA[A double value for alpha 1]]></description>
+      <default>0.5</default>
+    </double>
+    <double>
+      <name>alpha2</name>
+      <longflag>alpha2</longflag>
+      <flag>b</flag>
+      <label>Alpha2</label>
+      <description><![CDATA[A double value for alpha 2]]></description>
+      <default>2.0</default>
+    </double>
+    <double>
+      <name>calcificationThreshold</name>
+      <longflag>calcificationThresholdValue</longflag>
+      <flag>t</flag>
+      <description><![CDATA[Regions Brighter than this HU will be removed.]]></description>
+      <label>Calcification Threshold Value</label>
+      <default>800</default>
+    </double>
   </parameters>
 </executable>
