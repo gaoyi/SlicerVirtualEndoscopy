@@ -151,11 +151,13 @@ namespace gth818n
   void
   SeededOptimalPathFilter3D<SourceImageType, LabelImageType>::DijkstraBasedClassificationAHP()
   {
+    std::cout<<"     DijkstraBasedClassificationAHP 1111111111111\n"<<std::flush;
+
     HeapNodeWithPre *hnMin;
     HeapNodeWithPre hnTmp;
     long i, index;
 
-    LabelPixelType labSrc;
+    //LabelPixelType labSrc;
     SourcePixelType pixCenter;
 
     // Insert 0 then extract it, which will balance heap
@@ -164,9 +166,14 @@ namespace gth818n
 
     long numberOfEndSeedReached = 0;
 
+    std::cout<<"     DijkstraBasedClassificationAHP 2222222222\n"<<std::flush;
+
     // Normal Dijkstra to be used in initializing the segmenter for the current image
     while(!m_heap->IsEmpty())
       {
+
+        std::cout<<"     DijkstraBasedClassificationAHP 333333333333\n"<<std::flush;
+
         hnMin = (HeapNodeWithPre *) m_heap->ExtractMin();
         index = hnMin->GetIndexValue();
         float tSrc = hnMin->GetKeyValue();
@@ -205,6 +212,8 @@ namespace gth818n
               }
           }
       }
+
+    return;
   }
 
   template<typename SourceImageType, typename LabelImageType>
@@ -240,19 +249,28 @@ namespace gth818n
   void
   SeededOptimalPathFilter3D<SourceImageType, LabelImageType>::DoSegmentation()
   {
+    std::cout<<"... InitializationAHP\n"<<std::flush;
     InitializationAHP();
 
+    std::cout<<"... ... DijkstraBasedClassificationAHP\n"<<std::flush;
     DijkstraBasedClassificationAHP();
+    std::cout<<"......... DijkstraBasedClassificationAHP\n"<<std::flush;
+
+    return;
   }
 
   template<typename SourceImageType, typename LabelImageType>
   void
   SeededOptimalPathFilter3D<SourceImageType, LabelImageType>::update()
   {
+    std::cout<<"... SetupBeforeRun\n"<<std::flush;
+
     SetupBeforeRun();
 
+    std::cout<<"... DoSegmentation\n"<<std::flush;
     DoSegmentation();
 
+    std::cout<<"... BackTrace\n"<<std::flush;
     BackTrace();
 
     return;

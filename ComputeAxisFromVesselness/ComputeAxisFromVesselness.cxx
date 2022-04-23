@@ -60,10 +60,10 @@ namespace
   LabelImageType::Pointer mergeLabelImages(std::vector<LabelImageType::Pointer> labelImageList);
 
   // based on the axis lable image and the ct image, compute the label image to be used by shortcut to segment the vessel
-  LabelImageType::Pointer computeShortcutLabelImageFromAxisLabelImage(LabelImageType::Pointer axisLabelImage);
+  //LabelImageType::Pointer computeShortcutLabelImageFromAxisLabelImage(LabelImageType::Pointer axisLabelImage);
 
   // based on the axis lable image and the ct image, compute the vessel using shortcut
-  LabelImageType::Pointer segmentVesselFromAxisLabelImage(ImageType::Pointer ctImage, LabelImageType::Pointer axisLabelImage);
+  //LabelImageType::Pointer segmentVesselFromAxisLabelImage(ImageType::Pointer ctImage, LabelImageType::Pointer axisLabelImage);
 
 
   // based on the center line label image and a set of points
@@ -75,7 +75,7 @@ namespace
   // is only one seed point on the branch and we want to trace back to
   // the main axis. This confines that the branch is relatively not
   // too curved.
-  LabelImageType::Pointer computeBranchesFromAxisAndBranchSeedPoints(ImageType::Pointer metricImage, LabelImageType::Pointer axisLabelImage, const std::vector<std::vector<float> >& fiducialList);
+  //LabelImageType::Pointer computeBranchesFromAxisAndBranchSeedPoints(ImageType::Pointer metricImage, LabelImageType::Pointer axisLabelImage, const std::vector<std::vector<float> >& fiducialList);
 }
 
 int main( int argc, char * argv[] )
@@ -98,10 +98,10 @@ int main( int argc, char * argv[] )
   //--------------------------------------------------------------------------------
   // for each separated seed label image, trace in that one, in parallel
   std::vector<LabelImageType::Pointer> optimalPathLabelImageList(seedImageList.size());
-#pragma omp parallel for
+  //#pragma omp parallel for
   for (std::size_t it = 0; it < seedImageList.size(); ++it)
     {
-      std::cout<<"tracing in the "<<it<<" of "<<seedImageList.size()<<" images\n"<<std::flush;
+      std::cout<<"hahaha tracing in the "<<it<<" of "<<seedImageList.size()<<" images\n"<<std::flush;
       LabelImageType::Pointer thisSeedImage = seedImageList[it];
 
       // {
@@ -116,6 +116,8 @@ int main( int argc, char * argv[] )
       // }
 
       optimalPathLabelImageList[it] = computeOptimalPathLabelImage(vesselnessMetricImage, thisSeedImage);
+
+      std::cout<<"   done tracing in the "<<it<<" of "<<seedImageList.size()<<" images\n"<<std::flush;
     }
 
 
@@ -184,6 +186,7 @@ namespace
 
   LabelImageType::Pointer computeOptimalPathLabelImage(ImageType::Pointer metricImage, LabelImageType::Pointer inputSeedLabelImage)
   {
+    std::cout<<"in computeOptimalPathLabelImage\n"<<std::flush;
     //----------------------------------------------------------------------
     // Use short cut to find LCA axis
     gth818n::SeededOptimalPathFilter3D<ImageType, LabelImageType> sc;
@@ -198,6 +201,9 @@ namespace
     // typedef gth818n::SeededOptimalPathFilter3D<ImageType, LabelImageType>::FloatImageType FloatImageType;
     // FloatImageType::Pointer distanceImage = sc.GetDistanceImage();
     // gth818n::writeImage<FloatImageType>(distanceImage, "distanceMapLCA.nrrd", true);
+
+    std::cout<<"..... done computeOptimalPathLabelImage\n"<<std::flush;
+
 
     return optimalPathLabelImage;
   }
