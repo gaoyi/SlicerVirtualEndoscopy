@@ -5,7 +5,7 @@ project(VirtualEndoscopy)
 #-----------------------------------------------------------------------------
 # Extension meta-information
 set(EXTENSION_HOMEPAGE "https://www.slicer.org/wiki/Documentation/Nightly/Extensions/VirtualEndoscopy")
-set(EXTENSION_CATEGORY "Examples")
+set(EXTENSION_CATEGORY "Endoscopy")
 set(EXTENSION_CONTRIBUTORS "Yi Gao (Shenzhen University), Haofan Huang (Shenzhen University)")
 set(EXTENSION_DESCRIPTION "This extension performs the virtual endoscopy, including: centerline extraction, lumen segmentation, and virtual fly-through.")
 set(EXTENSION_ICONURL "https://www.example.com/Slicer/Extensions/VirtualEndoscopy.png")
