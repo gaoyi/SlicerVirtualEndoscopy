@@ -318,8 +318,6 @@ void
 CSFLSRobustStatSegmentor3DLabelMap< TPixel >
 ::doSegmenation()
 {
-  double startingTime = clock();
-
   getThingsReady();
 
   /*============================================================
@@ -477,68 +475,6 @@ CSFLSRobustStatSegmentor3DLabelMap< TPixel >
   return;
 }
 
-
-// /* ============================================================ */
-// template< typename TPixel >
-// void
-// CSFLSRobustStatSegmentor3DLabelMap< TPixel >
-// ::dialteSeeds()
-// {
-//   /* For each seed, add its 26 neighbors into the seed list. */
-
-//   if (!(this->mp_img))
-//     {
-//       std::cerr<<"Error: set input image first.\n";
-//       raise(SIGABRT);
-//     }
-
-
-//   long n = m_seeds.size();
-//   std::vector<std::vector<long> > newSeeds;
-
-//   if (n == 0)
-//     {
-//       std::cerr << "Error: No seeds specified." << std::endl;
-//       raise(SIGABRT);
-//     }
-
-
-//   for (long i = 0; i < n; ++i)
-//     {
-//       long ix = m_seeds[i][0];
-//       long iy = m_seeds[i][1];
-//       long iz = m_seeds[i][2];
-
-//       for (long iiz = iz - 1; iiz <= iz + 1; ++iiz)
-//         {
-//           for (long iiy = iy - 1; iiy <= iy + 1; ++iiy)
-//             {
-//               for (long iix = ix - 1; iix <= ix + 1; ++iix)
-//                 {
-//                   if (0 <= iix && iix < this->m_nx    \
-//                       && 0 <= iiy && iiy < this->m_ny    \
-//                       && 0 <= iiz && iiz < this->m_nz)
-//                     {
-//                       /* Some locations may be added multiple times,
-//                          if the original seeds are close. But I think
-//                          this is fine */
-
-//                       std::vector<long> s(3);
-//                       s[0] = iix;
-//                       s[1] = iiy;
-//                       s[2] = iiz;
-
-//                       newSeeds.push_back(s);
-//                     }
-//                 }
-//             }
-//         }
-//     }
-
-//   m_seeds.assign(newSeeds.begin(), newSeeds.end() );
-
-//   return;
-// }
 
 
 /* ============================================================  */

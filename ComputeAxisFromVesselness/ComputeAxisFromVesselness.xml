@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <executable>
-  <category>VirtualEndoscopy</category>
+  <category>Endoscopy</category>
   <title>Compute Axis From Vesselness Images</title>
   <description><![CDATA[This is a CLI module that compute the axis of a tubular structure in an image]]></description>
   <version>0.0.1</version>

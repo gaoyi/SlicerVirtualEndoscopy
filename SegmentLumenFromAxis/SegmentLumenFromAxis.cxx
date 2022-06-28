@@ -71,18 +71,6 @@ namespace
 
   // upsample images to 0.1mm isotropic
   LabelImageType::Pointer superResolutionSegmentation(ImageType::Pointer ctImage, LabelImageType::Pointer lumenSegmentationLabelImageInNativeResolution);
-
-
-  // template< typename TImageType >
-  // typename TImageType::Pointer
-  // upsampleImage(typename TImageType::Pointer img, double targetIsotrpicResolution, typename TImageType::PixelType fillInValue);
-
-  // template< typename TImageType, typename TLabelImageType >
-  // typename TLabelImageType::Pointer
-  // laplaceLevelsetSegmentationAtHighResolution(typename TImageType::Pointer img, \
-  //                                             typename TLabelImageType::Pointer initialBinaryLabelImage, \
-  //                                             int numiter);
-
 }
 
 namespace gth818n
@@ -574,8 +562,6 @@ namespace
 
     LabelImageType::Pointer dilatedAxisLabelImage = dilateFilter->GetOutput();
     const LabelImageType::PixelType* dilatedAxisLabelImageBufferPointer = dilatedAxisLabelImage->GetBufferPointer();
-
-    const ImageType::PixelType* ctImageBufferPointer = ctImage->GetBufferPointer();
 
     const LabelImageType::PixelType* axisLabelImageBufferPointer = axisLabelImage->GetBufferPointer();
 

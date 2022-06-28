@@ -103,8 +103,6 @@ namespace
 
     const ImageType::PixelType* ctImageBufferPtr = ctImage->GetBufferPointer();
 
-    ImageType::PixelType v;
-    ImageType::PixelType m;
     for (long it = 0; it < np; ++it)
       {
         if (ctImageBufferPtr[it] > calcificationThreshold)
@@ -146,9 +144,7 @@ namespace
 
     ImageType::PixelType* vesselnessImageBufferPointer = vesselnessImage->GetBufferPointer();
     long np = vesselnessImage->GetLargestPossibleRegion().GetNumberOfPixels();
-    ImageType::PixelType maxVesselness = *std::max_element(vesselnessImageBufferPointer, vesselnessImageBufferPointer+np);
 
-    const ImageType::PixelType* ctImageBufferPtr = ctImage->GetBufferPointer();
     ImageType::PixelType* metricImageBufferPointer = metricImage->GetBufferPointer();
 
     ImageType::PixelType v;

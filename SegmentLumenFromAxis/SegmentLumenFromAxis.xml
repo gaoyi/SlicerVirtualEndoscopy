@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <executable>
-  <category>VirtualEndoscopy</category>
+  <category>Endoscopy</category>
   <title>Segment Lumen From Axis</title>
   <description><![CDATA[This is a CLI module that segment the lumen from the binary image representation of its axis]]></description>
   <version>0.0.1</version>

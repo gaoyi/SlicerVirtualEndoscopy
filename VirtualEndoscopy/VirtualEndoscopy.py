@@ -64,8 +64,8 @@ def registerSampleData():
   # VirtualEndoscopy1
   SampleData.SampleDataLogic.registerCustomSampleDataSource(
     # Category and sample name displayed in Sample Data module
-    category='VirtualEndoscopy',
-    sampleName='VirtualEndoscopy1',
+    category='Endoscopy',
+    sampleName='VirtualEndoscopy',
     # Thumbnail should have size of approximately 260x280 pixels and stored in Resources/Icons folder.
     # It can be created by Screen Capture module, "Capture all views" option enabled, "Number of images" set to "Single".
     thumbnailFileName=os.path.join(iconsPath, 'VirtualEndoscopy1.png'),
@@ -82,7 +82,7 @@ def registerSampleData():
   # VirtualEndoscopy2
   SampleData.SampleDataLogic.registerCustomSampleDataSource(
     # Category and sample name displayed in Sample Data module
-    category='VirtualEndoscopy',
+    category='Endoscopy',
     sampleName='VirtualEndoscopy2',
     thumbnailFileName=os.path.join(iconsPath, 'VirtualEndoscopy2.png'),
     # Download URL and target file name
@@ -121,6 +121,10 @@ class VirtualEndoscopyWidget(ScriptedLoadableModuleWidget, VTKObservationMixin):
     Called when the user opens the module the first time and the widget is initialized.
     """
     ScriptedLoadableModuleWidget.setup(self)
+
+    # Create logic class. Logic implements all computations that should be possible to run
+    # in batch mode, without a graphical user interface.
+    self.logic = VirtualEndoscopyLogic()
 
     # Instantiate and connect widgets ...
     self.setupWholePanel()
@@ -285,16 +289,10 @@ class VirtualEndoscopyWidget(ScriptedLoadableModuleWidget, VTKObservationMixin):
     parameters['outputAxisMaskVolume'] = axisTreeLabelImageNode.GetID()
 
     ################################################################################
-    # This CLI module "computetree" treat the 1st fiducial point as
-    #the root and trace every other fiducial points back to the root
-    #slicer.cli.run( slicer.modules.computetree, None, parameters, wait_for_completion=True )
-
-    ################################################################################
     # This CLI module "ComputeAxisFromVesselness" treat the (i-1)-th
     #fiducial point as the root and trace from the i-th point to the
     #(i-1)-th one. Then from (i+1) to i, and on. So this module gives
     #a SINGEL axis.
-    #slicer.cli.run( slicer.modules.ComputeAxisFromVesselness, None, parameters, wait_for_completion=True )
     slicer.cli.run( slicer.modules.computeaxisfromvesselness, None, parameters, wait_for_completion=True )
     #================================================================================
 
@@ -311,102 +309,6 @@ class VirtualEndoscopyWidget(ScriptedLoadableModuleWidget, VTKObservationMixin):
     slicer.cli.run( slicer.modules.segmentlumenfromaxis, None, parameters, wait_for_completion=True )
     # Run the SegmentLumenFromAxis CLI to get the vesselness
     #================================================================================
-
-    # d = vesselNessImageNode.GetDisplayNode()
-    # d.SetVisibility(0) # do not show the vesselness image
-
-
-
-    
-    # #--------------------------------------------------------------------------------
-    # # Run the model maker to genreate surface
-    # parameters = {}
-    # parameters['InputVolume'] = self.outputLumenLabelImageSelector.currentNode().GetID()
-    # lumenModelHierarchy = slicer.vtkMRMLModelHierarchyNode()
-    # lumenModelHierarchy.SetName("theLumenModelHierarchy")
-    # slicer.mrmlScene.AddNode( lumenModelHierarchy )
-    # parameters['ModelSceneFile'] = lumenModelHierarchy.GetID()
-    # slicer.cli.run( slicer.modules.modelmaker, None, parameters, wait_for_completion=True )
-    # # Run the model maker to genreate surface
-    # #================================================================================
-
-
-
-    # #--------------------------------------------------------------------------------
-    # # Backface To Frontface 
-    # e = slicer.util.getNode('Model_1_jake')
-    # f = e.GetDisplayNode()
-    # f.SetBackfaceCulling(0)
-    # f.SetFrontfaceCulling(1)
-    # # Backface To Frontface 
-    # #================================================================================
-
-
-
-    # #--------------------------------------------------------------------------------
-    # # To get the central coordinates of pancreatic duct and insert fiducials on them
-    # inputvalues = slicer.util.getNode('axisTreeLabelImage')
-    # # print('ehhhhh.')
-    # # print(inputvalues)
-    # inputdata = slicer.util.arrayFromVolume(inputvalues)
-    # coordinates = np.where(inputdata != 0)
-    # I = coordinates[2][3::3]
-    # # print('I:')
-    # # print(I)
-    # J = coordinates[1][3::3]
-    # # print('J:')
-    # # print(J)
-    # K = coordinates[0][3::3]
-    # # print('K:')
-    # # print(K)
-    # RasCoordinates = []
-    # N = 0
-    
-    # # IJK TO RAS
-    # ijkToRasMatrix = vtk.vtkMatrix4x4()
-    # inputvalues.GetIJKToRASMatrix(ijkToRasMatrix)	
-    # for N in range(len(I)):
-    #   c_Ijk = [I[N],J[N],K[N],1]
-    #   c_Ras = ijkToRasMatrix.MultiplyFloatPoint(c_Ijk)
-    #   RasCoordinates.append(c_Ras)
-    # # print('RasCoordinates:')
-    # # print(RasCoordinates)
-
-    # # Change the bottom fiducial point to the second point
-    # fidNode = slicer.util.getNode('F')
-    # ras = [0,0,0]
-    # fidNode.GetNthFiducialPosition(1,ras)
-    # # print(ras)
-    # RasCoordinates.append(ras)
-    # fidNode.SetNthFiducialPosition(1,RasCoordinates[0][0],RasCoordinates[0][1],RasCoordinates[0][2])
-    # RasCoordinates.pop(0)
-    # for c in RasCoordinates:
-    #   slicer.modules.markups.logic().AddFiducial(c[0],c[1],c[2])
-    # # To get the central coordinates of pancreatic duct and insert fiducials on them
-    # #================================================================================
-   
-
-
-
-
-    # TODO
-    # parameters = {}
-    # parameters["InputVolume"] = vesselNessImage.GetID()
-    # grayModel = slicer.vtkMRMLModelNode()
-    # slicer.mrmlScene.AddNode( grayModel )
-    # parameters["OutputGeometry"] = grayModel.GetID()
-    # parameters['Threshold'] = self.vesselSlicerWidget.value
-    # grayMaker = slicer.modules.grayscalemodelmaker
-    # slicer.cli.runSync(grayMaker, None, parameters)
-    # d = grayModel.GetDisplayNode()
-    # d.SetVisibility(0) # do not show the gray model
-
-
-    # parameters = {}
-    # parameters["ModelSceneFile"] = grayModel.GetID()
-    # parameters["fiducialsAlongCA"] = self.axisFiducialsNodeSelectorNew.currentNode().GetID()
-    # parameters["axisPolylineName"] = self.outputGeometrySelector.currentNode().GetID()
-    # slicer.cli.run( slicer.modules.computepathonsurface, None, parameters, wait_for_completion=True )
 
   def onNewButton(self):
 
@@ -446,7 +348,6 @@ class VirtualEndoscopyWidget(ScriptedLoadableModuleWidget, VTKObservationMixin):
     vesselnessVolumeNode = self.inputVesslenessImageSelector2.currentNode()
     inputAxisLabelNode = self.inputAxisLabelImageSelector1.currentNode()
     mainAndBranchAxisLabelImageNode = self.outputBranchLabelImageSelector.currentNode()
-    #self.mainAndBranchAxisLabelImageNode.SetName("axisWithBranchLabelVolume-label")
     if not (vesselnessVolumeNode and mainAndBranchAxisLabelImageNode):
       qt.QMessageBox.critical(
         slicer.util.mainWindow(),
@@ -470,7 +371,6 @@ class VirtualEndoscopyWidget(ScriptedLoadableModuleWidget, VTKObservationMixin):
   def onPreProcessImageButton(self):
     originalVolumeNode = self.inputOriginalImageSelector.currentNode()
     vesselnessVolumeNode = self.outputVesslenessImageSelector.currentNode()
-    #vesselnessVolumeNode.SetName("vesselnessVolume")
     if not (originalVolumeNode and vesselnessVolumeNode):
       qt.QMessageBox.critical(
           slicer.util.mainWindow(),
@@ -489,9 +389,6 @@ class VirtualEndoscopyWidget(ScriptedLoadableModuleWidget, VTKObservationMixin):
     parameters['alpha1'] = 0.5
     parameters['alpha2'] = 2.0
     parameters['calcificationThreshold'] = self.calcificationSlicerWidget.value
-    # parameters['sigma'] = self.sigmaSlicerWidget.value
-    # parameters['alpha1'] = self.alpha1SlicerWidget.value
-    # parameters['alpha2'] = self.alpha2SlicerWidget.value
 
     slicer.cli.run( slicer.modules.computevesselness, None, parameters, wait_for_completion=True )
 
@@ -507,14 +404,10 @@ class VirtualEndoscopyWidget(ScriptedLoadableModuleWidget, VTKObservationMixin):
     #selectionNode.SetReferenceSecondaryVolumeID(fg)
     appLogic.PropagateVolumeSelection()
 
-#    self.computeAxisButton.enabled = True
-
-
 
   def onComputeAxisButton(self):
     inputVesselnessVolumeNode = self.inputVesslenessImageSelector1.currentNode()
     axisLabelVolumeNode = self.outputAxisLabelImageSelector.currentNode()
-    #self.axisLabelVolumeNode.SetName("axisLabelVolume-label")
     if not (inputVesselnessVolumeNode and axisLabelVolumeNode):
       qt.QMessageBox.critical(
         slicer.util.mainWindow(),
@@ -616,62 +509,6 @@ class VirtualEndoscopyWidget(ScriptedLoadableModuleWidget, VTKObservationMixin):
     if self._parameterNode is None or self._updatingGUIFromParameterNode:
       return
 
-    # Make sure GUI changes do not call updateParameterNodeFromGUI (it could cause infinite loop)
-    self._updatingGUIFromParameterNode = True
-
-    # Update node selectors and sliders
-    self.ui.inputSelector.setCurrentNode(self._parameterNode.GetNodeReference("InputVolume"))
-    self.ui.outputSelector.setCurrentNode(self._parameterNode.GetNodeReference("OutputVolume"))
-    self.ui.invertedOutputSelector.setCurrentNode(self._parameterNode.GetNodeReference("OutputVolumeInverse"))
-    self.ui.imageThresholdSliderWidget.value = float(self._parameterNode.GetParameter("Threshold"))
-    self.ui.invertOutputCheckBox.checked = (self._parameterNode.GetParameter("Invert") == "true")
-
-    # Update buttons states and tooltips
-    if self._parameterNode.GetNodeReference("InputVolume") and self._parameterNode.GetNodeReference("OutputVolume"):
-      self.ui.applyButton.toolTip = "Compute output volume"
-      self.ui.applyButton.enabled = True
-    else:
-      self.ui.applyButton.toolTip = "Select input and output volume nodes"
-      self.ui.applyButton.enabled = False
-
-    # All the GUI updates are done
-    self._updatingGUIFromParameterNode = False
-
-  def updateParameterNodeFromGUI(self, caller=None, event=None):
-    """
-    This method is called when the user makes any change in the GUI.
-    The changes are saved into the parameter node (so that they are restored when the scene is saved and loaded).
-    """
-
-    if self._parameterNode is None or self._updatingGUIFromParameterNode:
-      return
-
-    wasModified = self._parameterNode.StartModify()  # Modify all properties in a single batch
-
-    self._parameterNode.SetNodeReferenceID("InputVolume", self.ui.inputSelector.currentNodeID)
-    self._parameterNode.SetNodeReferenceID("OutputVolume", self.ui.outputSelector.currentNodeID)
-    self._parameterNode.SetParameter("Threshold", str(self.ui.imageThresholdSliderWidget.value))
-    self._parameterNode.SetParameter("Invert", "true" if self.ui.invertOutputCheckBox.checked else "false")
-    self._parameterNode.SetNodeReferenceID("OutputVolumeInverse", self.ui.invertedOutputSelector.currentNodeID)
-
-    self._parameterNode.EndModify(wasModified)
-
-  def onApplyButton(self):
-    """
-    Run processing when user clicks "Apply" button.
-    """
-    with slicer.util.tryWithErrorDisplay("Failed to compute results.", waitCursor=True):
-
-      # Compute output
-      self.logic.process(self.ui.inputSelector.currentNode(), self.ui.outputSelector.currentNode(),
-        self.ui.imageThresholdSliderWidget.value, self.ui.invertOutputCheckBox.checked)
-
-      # Compute inverted output (if needed)
-      if self.ui.invertedOutputSelector.currentNode():
-        # If additional output volume is selected then result with inverted threshold is written there
-        self.logic.process(self.ui.inputSelector.currentNode(), self.ui.invertedOutputSelector.currentNode(),
-          self.ui.imageThresholdSliderWidget.value, not self.ui.invertOutputCheckBox.checked, showResult=False)
-
 
 #
 # VirtualEndoscopyLogic
@@ -693,6 +530,15 @@ class VirtualEndoscopyLogic(ScriptedLoadableModuleLogic):
     """
     ScriptedLoadableModuleLogic.__init__(self)
 
+
+  def setDefaultParameters(self, parameterNode):
+    """
+    Initialize parameter node with default settings.
+    """
+    if not parameterNode.GetParameter("Threshold"):
+      parameterNode.SetParameter("Threshold", "800.0")
+    if not parameterNode.GetParameter("Invert"):
+      parameterNode.SetParameter("Invert", "false")
 
 
   def hasImageData(self,volumeNode):
