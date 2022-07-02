@@ -34,6 +34,9 @@
           <string>vtkMRMLScalarVolumeNode</string>
          </stringlist>
         </property>
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
         <property name="showChildNodeTypes">
          <bool>false</bool>
         </property>
@@ -66,6 +69,9 @@
         </property>
         <property name="showChildNodeTypes">
          <bool>false</bool>
+        </property>
+        <property name="enabled">
+         <bool>true</bool>
         </property>
         <property name="addEnabled">
          <bool>false</bool>
@@ -101,8 +107,12 @@
         </property>
         <property name="nodeTypes">
          <stringlist>
-          <string>vtkMRMLScalarVolumeNode</string>
+           <!-- <string>vtkMRMLScalarVolumeNode</string> -->
+           <string>vtkMRMLLabelMapVolumeNode</string>
          </stringlist>
+        </property>
+        <property name="enabled">
+         <bool>true</bool>
         </property>
         <property name="showChildNodeTypes">
          <bool>false</bool>
@@ -223,7 +233,7 @@
     </widget>
    </item>
    <item>
-     <widget class="QPushButton" name="computeWholeProcess">
+     <widget class="QPushButton" name="computeWholeProcess1">
        <property name="toolTip">
          <string>Run the whole process.</string>
        </property>
@@ -272,11 +282,12 @@
   </customwidget>
  </customwidgets>
  <resources/>
+ <connections/>
  <connections>
   <connection>
    <sender>VirtualEndoscopy</sender>
    <signal>mrmlSceneChanged(vtkMRMLScene*)</signal>
-   <receiver>inputSelector</receiver>
+   <receiver>inputOriginalImageSelector1</receiver>
    <slot>setMRMLScene(vtkMRMLScene*)</slot>
    <hints>
     <hint type="sourcelabel">
@@ -292,7 +303,7 @@
   <connection>
    <sender>VirtualEndoscopy</sender>
    <signal>mrmlSceneChanged(vtkMRMLScene*)</signal>
-   <receiver>outputSelector</receiver>
+   <receiver>treeFiducialsNodeSelector</receiver>
    <slot>setMRMLScene(vtkMRMLScene*)</slot>
    <hints>
     <hint type="sourcelabel">
@@ -308,7 +319,7 @@
   <connection>
    <sender>VirtualEndoscopy</sender>
    <signal>mrmlSceneChanged(vtkMRMLScene*)</signal>
-   <receiver>invertedOutputSelector</receiver>
+   <receiver>outputLumenLabelImageSelector1</receiver>
    <slot>setMRMLScene(vtkMRMLScene*)</slot>
    <hints>
     <hint type="sourcelabel">

@@ -140,144 +140,29 @@ class VirtualEndoscopyWidget(ScriptedLoadableModuleWidget, VTKObservationMixin):
     # in batch mode, without a graphical user interface.
     self.logic = VirtualEndoscopyLogic()
 
-    # Instantiate and connect widgets ...
-    self.setupWholePanel()
 
+    # These connections ensure that we update parameter node when scene is closed
+    self.addObserver(slicer.mrmlScene, slicer.mrmlScene.StartCloseEvent, self.onSceneStartClose)
+    self.addObserver(slicer.mrmlScene, slicer.mrmlScene.EndCloseEvent, self.onSceneEndClose)
+
+
+    # Instantiate and connect widgets ...
+    #self.setupWholePanel()
 
     # Make sure parameter node is initialized (needed for module reload)
     self.initializeParameterNode()
 
 
-  def onComputeLumenButton(self):
-    originalVolumeNode = self.inputOriginalImageSelector1.currentNode()
-    inputAxisLabelNode = self.inputAxisLabelImageSelector2.currentNode()
-    outputLumenLabelVolumeNode = self.outputLumenLabelImageSelector.currentNode()
-
-
-    # run the filter
-    ijkToRAS = vtk.vtkMatrix4x4()
-    originalVolumeNode.GetIJKToRASMatrix(ijkToRAS)
-    outputLumenLabelVolumeNode.SetIJKToRASMatrix(ijkToRAS)
-    #outputLumenLabelVolumeNode.SetName("vesselLumenLabelVolume")
-
-    parameters = {}
-    parameters['inputVolume'] = originalVolumeNode.GetID()
-    parameters['inputAxisLabelVolume'] = inputAxisLabelNode.GetID()
-    parameters['lowerThreshold'] = self.thresholdSliderWidget.value
-    parameters['outputLumenMaskVolume'] = outputLumenLabelVolumeNode.GetID()
-
-    slicer.cli.run( slicer.modules.segmentlumenfromaxis, None, parameters, wait_for_completion=True )
-
-
-  def setupWholePanel(self):
-    wholeProcessCollapsibleButton = ctk.ctkCollapsibleButton()
-    wholeProcessCollapsibleButton.text = "The Whole Process Pipeline"
-    self.layout.addWidget(wholeProcessCollapsibleButton)
-
-    # Layout within the dummy collapsible button
-    wholeProcessFormLayout = qt.QFormLayout(wholeProcessCollapsibleButton)
-
-    #
-    # input volume selector
-    #
-    self.inputOriginalImageSelector = slicer.qMRMLNodeComboBox()
-    self.inputOriginalImageSelector.nodeTypes = ["vtkMRMLScalarVolumeNode"]
-    self.inputOriginalImageSelector.selectNodeUponCreation = True
-    self.inputOriginalImageSelector.addEnabled = False
-    self.inputOriginalImageSelector.removeEnabled = False
-    self.inputOriginalImageSelector.renameEnabled = False
-    self.inputOriginalImageSelector.noneEnabled = False
-    self.inputOriginalImageSelector.showHidden = False
-    self.inputOriginalImageSelector.showChildNodeTypes = False
-    self.inputOriginalImageSelector.setMRMLScene( slicer.mrmlScene )
-    self.inputOriginalImageSelector.setToolTip( "Pick the input to the algorithm." )
-    wholeProcessFormLayout.addRow("Input Volume: ", self.inputOriginalImageSelector)
-
-    # Input fiducials node selector
-    self.treeFiducialsNodeSelector = slicer.qMRMLNodeComboBox()
-    self.treeFiducialsNodeSelector.objectName = 'treeFiducialsNodeSelector'
-    self.treeFiducialsNodeSelector.toolTip = "Select a fiducial list to define control points for the axis."
-    self.treeFiducialsNodeSelector.nodeTypes = ['vtkMRMLMarkupsFiducialNode', 'vtkMRMLAnnotationHierarchyNode', 'vtkMRMLFiducialListNode']
-    #self.treeFiducialsNodeSelector.nodeTypes = ['vtkMRMLMarkupsFiducialNode']
-    self.treeFiducialsNodeSelector.noneEnabled = False
-    self.treeFiducialsNodeSelector.renameEnabled = False
-    self.treeFiducialsNodeSelector.addEnabled = False
-    self.treeFiducialsNodeSelector.removeEnabled = False
-    wholeProcessFormLayout.addRow("Axis Tree Fiducials:", self.treeFiducialsNodeSelector)
-    self.parent.connect('mrmlSceneChanged(vtkMRMLScene*)', self.treeFiducialsNodeSelector, 'setMRMLScene(vtkMRMLScene*)') #not sure what this line is for???
-
-    #
-    # output lumen label image selector
-    #
-    self.outputLumenLabelImageSelector = slicer.qMRMLNodeComboBox()
-    self.outputLumenLabelImageSelector.nodeTypes = ["vtkMRMLLabelMapVolumeNode"]
-    self.outputLumenLabelImageSelector.objectName = "lumenLabelVolume"
-    self.outputLumenLabelImageSelector.selectNodeUponCreation = True
-    self.outputLumenLabelImageSelector.renameEnabled = True
-    self.outputLumenLabelImageSelector.addEnabled = True
-    self.outputLumenLabelImageSelector.removeEnabled = False
-    self.outputLumenLabelImageSelector.noneEnabled = False
-    self.outputLumenLabelImageSelector.showHidden = False
-    self.outputLumenLabelImageSelector.showChildNodeTypes = False
-    self.outputLumenLabelImageSelector.setMRMLScene( slicer.mrmlScene )
-    self.outputLumenLabelImageSelector.setToolTip( "Pick the output to the algorithm." )
-    wholeProcessFormLayout.addRow("Lumen Label Volume: ", self.outputLumenLabelImageSelector)
-
-
-    self.vesselBrighterCheckBox = qt.QCheckBox()
-    self.vesselBrighterCheckBox.checked = False
-    self.vesselBrighterCheckBox.setToolTip("Is vessel brighter than the surroundings?")
-    wholeProcessFormLayout.addRow("Vessel brighter than the surroundings?", self.vesselBrighterCheckBox)
-
-    #
-    # Calcification threshold
-    #
-    self.calcificationSlicerWidget = ctk.ctkSliderWidget()
-    self.calcificationSlicerWidget.singleStep = 1
-    self.calcificationSlicerWidget.minimum = -1000
-    self.calcificationSlicerWidget.maximum = 10000
-    self.calcificationSlicerWidget.value = 800
-    self.calcificationSlicerWidget.setToolTip("Calcification value.")
-    wholeProcessFormLayout.addRow("Calcification", self.calcificationSlicerWidget)
-
-
-    self.thresholdSliderWidget = ctk.ctkSliderWidget()
-    self.thresholdSliderWidget.tracking = True
-    self.thresholdSliderWidget.singleStep = 1
-    self.thresholdSliderWidget.minimum = -1000
-    self.thresholdSliderWidget.maximum = 1000
-    self.thresholdSliderWidget.decimals = 0
-    self.thresholdSliderWidget.value = 0
-    self.thresholdSliderWidget.setToolTip("Threshold Value")
-    self.thresholdSliderWidget.enabled = True
-    wholeProcessFormLayout.addRow("Treshold", self.thresholdSliderWidget)
-
-    self.superResolutionCheckBox = qt.QCheckBox()
-    self.superResolutionCheckBox.checked = False
-    self.superResolutionCheckBox.setToolTip("Perform super-resolution segmentation?")
-    wholeProcessFormLayout.addRow("Perform super-resolution segmentation?", self.superResolutionCheckBox)
-
-    #
-    # Apply Button
-    #
-    self.computeWholeProcess = qt.QPushButton("Run it")
-    self.computeWholeProcess.toolTip = "Run the whole process."
-    self.computeWholeProcess.enabled = True
-    wholeProcessFormLayout.addRow(self.computeWholeProcess)
-
     # connections
-    self.computeWholeProcess.connect('clicked(bool)', self.onWholeProcessButton)
-
-  def enableOrDisableComputeVesslenessButton(self):
-    self.computeVesslenessButton.enabled = self.inputOriginalImageSelector.currentNodeID and self.outputVesslenessImageSelector.currentNodeID
+    self.ui.computeWholeProcess1.connect('clicked(bool)', self.onWholeProcessButton)
 
 
   def onWholeProcessButton(self):
     #--------------------------------------------------------------------------------
     # Run the ComputeVesselness CLI to get the vesselness
     parameters = {}
-    parameters['inputVolume'] = self.inputOriginalImageSelector.currentNode().GetID()
-    parameters['vesselIsBrighter'] = self.vesselBrighterCheckBox.checked
+    parameters['inputVolume'] = self.ui.inputOriginalImageSelector1.currentNode().GetID()
+    parameters['vesselIsBrighter'] = self.ui.vesselBrighterCheckBox.checked
     vesselNessImageNode = slicer.vtkMRMLScalarVolumeNode()
     vesselNessImageNode.SetName("vesselNessImage")
     slicer.mrmlScene.AddNode( vesselNessImageNode )
@@ -285,7 +170,7 @@ class VirtualEndoscopyWidget(ScriptedLoadableModuleWidget, VTKObservationMixin):
     parameters['sigma'] = 1.0
     parameters['alpha1'] = 2.0
     parameters['alpha2'] = 2.0
-    parameters['calcificationThreshold'] = self.calcificationSlicerWidget.value
+    parameters['calcificationThreshold'] = self.ui.calcificationSlicerWidget.value
     slicer.cli.run( slicer.modules.computevesselness, None, parameters, wait_for_completion=True )
     # Run the ComputeVesselness CLI to get the vesselness
     #================================================================================
@@ -295,7 +180,7 @@ class VirtualEndoscopyWidget(ScriptedLoadableModuleWidget, VTKObservationMixin):
     # Compute axis tree
     parameters = {}
     parameters['inputVesselnessVolume'] = vesselNessImageNode.GetID()
-    parameters['fiducialsAlongCA'] = self.treeFiducialsNodeSelector.currentNode()
+    parameters['fiducialsAlongCA'] = self.ui.treeFiducialsNodeSelector.currentNode()
 
     axisTreeLabelImageNode = slicer.vtkMRMLLabelMapVolumeNode()
     axisTreeLabelImageNode.SetName("axisTreeLabelImage")
@@ -313,134 +198,27 @@ class VirtualEndoscopyWidget(ScriptedLoadableModuleWidget, VTKObservationMixin):
     #--------------------------------------------------------------------------------
     # Run the SegmentLumenFromAxis CLI to get the vesselness
     parameters = {}
-    parameters['inputVolume'] = self.inputOriginalImageSelector.currentNode().GetID()
+    parameters['inputVolume'] = self.ui.inputOriginalImageSelector1.currentNode().GetID()
     parameters['inputAxisLabelVolume'] = axisTreeLabelImageNode.GetID()
-    parameters['lowerThreshold'] = self.thresholdSliderWidget.value
-    parameters['calcificationThreshold'] = self.calcificationSlicerWidget.value
-    parameters['outputLumenMaskVolume'] = self.outputLumenLabelImageSelector.currentNode()
-    parameters['superResolution'] = self.superResolutionCheckBox.checked
+    parameters['lowerThreshold'] = self.ui.thresholdSliderWidget.value
+    parameters['calcificationThreshold'] = self.ui.calcificationSlicerWidget.value
+    parameters['outputLumenMaskVolume'] = self.ui.outputLumenLabelImageSelector1.currentNode()
+    parameters['superResolution'] = self.ui.superResolutionCheckBox.checked
 
     slicer.cli.run( slicer.modules.segmentlumenfromaxis, None, parameters, wait_for_completion=True )
     # Run the SegmentLumenFromAxis CLI to get the vesselness
     #================================================================================
 
-  def onNewButton(self):
 
-    parameters = {}
-    parameters['inputVolume'] = self.inputOriginalImageSelector.currentNode().GetID()
-    parameters['vesselIsBrighter'] = self.vesselBrighterCheckBox.checked
-    vesselNessImage = slicer.vtkMRMLScalarVolumeNode()
-    vesselNessImage.SetName("vesselNessImage")
-    slicer.mrmlScene.AddNode( vesselNessImage )
-    parameters['outputVesselnessVolume'] = vesselNessImage.GetID()
-    parameters['sigma'] = 1.0
-    parameters['alpha1'] = 2.0
-    parameters['alpha2'] = 2.0
-    parameters['calcificationThreshold'] = self.calcificationSlicerWidget.value
-    slicer.cli.run( slicer.modules.computevesselness, None, parameters, wait_for_completion=True )
+    originalVolumeNode = self.ui.inputOriginalImageSelector1.currentNode().GetID()
+    slicer.util.setSliceViewerLayers(background = originalVolumeNode)
+    lumenLabelVolumeNode = self.ui.outputLumenLabelImageSelector1.currentNode()
+    #slicer.util.setSliceViewerLayers(foreground=lumenLabelVolumeNode)
+    #slicer.util.setSliceViewerLayers(foregroundOpacity=0.4)
 
-    parameters = {}
-    parameters["InputVolume"] = vesselNessImage.GetID()
-    grayModel = slicer.vtkMRMLModelNode()
-    slicer.mrmlScene.AddNode( grayModel )
-    parameters["OutputGeometry"] = grayModel.GetID()
-    parameters['Threshold'] = self.vesselSlicerWidget.value
-    grayMaker = slicer.modules.grayscalemodelmaker
-    slicer.cli.runSync(grayMaker, None, parameters)
-    d = grayModel.GetDisplayNode()
-    d.SetVisibility(0) # do not show the gray model
+    slicer.util.setSliceViewerLayers(label=lumenLabelVolumeNode)
+    slicer.util.setSliceViewerLayers(labelOpacity=0.7)
 
-
-    parameters = {}
-    parameters["ModelSceneFile"] = grayModel.GetID()
-    parameters["fiducialsAlongCA"] = self.axisFiducialsNodeSelectorNew.currentNode().GetID()
-    parameters["axisPolylineName"] = self.outputGeometrySelector.currentNode().GetID()
-    slicer.cli.run( slicer.modules.computepathonsurface, None, parameters, wait_for_completion=True )
-
-
-  def onComputeBranchButton(self):
-    vesselnessVolumeNode = self.inputVesslenessImageSelector2.currentNode()
-    inputAxisLabelNode = self.inputAxisLabelImageSelector1.currentNode()
-    mainAndBranchAxisLabelImageNode = self.outputBranchLabelImageSelector.currentNode()
-    if not (vesselnessVolumeNode and mainAndBranchAxisLabelImageNode):
-      qt.QMessageBox.critical(
-        slicer.util.mainWindow(),
-        'Compute', 'Input and output volumes are required for computing branch axis')
-      return
-    # run the filter
-    ijkToRAS = vtk.vtkMatrix4x4()
-    vesselnessVolumeNode.GetIJKToRASMatrix(ijkToRAS)
-    mainAndBranchAxisLabelImageNode.SetIJKToRASMatrix(ijkToRAS)
-
-    branchFiducialsNode = self.branchFiducialsNodeSelector.currentNode();
-
-    parameters = {}
-    parameters['inputVesselnessVolume'] = vesselnessVolumeNode.GetID()
-    parameters['fiducialsOnBranches'] = branchFiducialsNode.GetID()
-    parameters['inputAxisLabelVolume'] = inputAxisLabelNode.GetID()
-    parameters['outputAxisAndBranchMaskVolume'] = mainAndBranchAxisLabelImageNode.GetID()
-
-    slicer.cli.run( slicer.modules.computebranchaxis, None, parameters, wait_for_completion=True )
-
-  def onPreProcessImageButton(self):
-    originalVolumeNode = self.inputOriginalImageSelector.currentNode()
-    vesselnessVolumeNode = self.outputVesslenessImageSelector.currentNode()
-    if not (originalVolumeNode and vesselnessVolumeNode):
-      qt.QMessageBox.critical(
-          slicer.util.mainWindow(),
-          'Compute', 'Input and output volumes are required for computing vessleness')
-      return
-    # run the filter
-    ijkToRAS = vtk.vtkMatrix4x4()
-    originalVolumeNode.GetIJKToRASMatrix(ijkToRAS)
-    vesselnessVolumeNode.SetIJKToRASMatrix(ijkToRAS)
-
-    parameters = {}
-    parameters['inputVolume'] = originalVolumeNode.GetID()
-    parameters['vesselIsBrighter'] = self.vesselBrighterCheckBox.checked
-    parameters['outputVesselnessVolume'] = vesselnessVolumeNode.GetID()
-    parameters['sigma'] = 0.5
-    parameters['alpha1'] = 0.5
-    parameters['alpha2'] = 2.0
-    parameters['calcificationThreshold'] = self.calcificationSlicerWidget.value
-
-    slicer.cli.run( slicer.modules.computevesselness, None, parameters, wait_for_completion=True )
-
-
-    # fill computed vesselness image to other UI selectors
-    self.inputVesslenessImageSelector1.setCurrentNode(self.outputVesslenessImageSelector.currentNode());
-    self.inputVesslenessImageSelector2.setCurrentNode(self.outputVesslenessImageSelector.currentNode());
-
-
-    appLogic = slicer.app.applicationLogic()
-    selectionNode = appLogic.GetSelectionNode()
-    selectionNode.SetReferenceActiveVolumeID(self.inputOriginalImageSelector.currentNode().GetID())
-    #selectionNode.SetReferenceSecondaryVolumeID(fg)
-    appLogic.PropagateVolumeSelection()
-
-
-  def onComputeAxisButton(self):
-    inputVesselnessVolumeNode = self.inputVesslenessImageSelector1.currentNode()
-    axisLabelVolumeNode = self.outputAxisLabelImageSelector.currentNode()
-    if not (inputVesselnessVolumeNode and axisLabelVolumeNode):
-      qt.QMessageBox.critical(
-        slicer.util.mainWindow(),
-        'Compute', 'Input and output volumes are required for computing axis')
-      return
-    # run the filter
-    ijkToRAS = vtk.vtkMatrix4x4()
-    inputVesselnessVolumeNode.GetIJKToRASMatrix(ijkToRAS)
-    axisLabelVolumeNode.SetIJKToRASMatrix(ijkToRAS)
-
-    axisFiducialsNode = self.axisFiducialsNodeSelector.currentNode();
-
-    parameters = {}
-    parameters['inputVesselnessVolume'] = inputVesselnessVolumeNode.GetID()
-    parameters['fiducialsAlongCA'] = axisFiducialsNode.GetID()
-    parameters['outputAxisMaskVolume'] = axisLabelVolumeNode.GetID()
-
-
-    slicer.cli.run( slicer.modules.computeaxisfromvesselness, None, parameters, wait_for_completion=True )
 
 
   def cleanup(self):
