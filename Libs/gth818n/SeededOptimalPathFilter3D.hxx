@@ -172,7 +172,8 @@ namespace gth818n
     while(!m_heap->IsEmpty())
       {
 
-        std::cout<<"     DijkstraBasedClassificationAHP 333333333333\n"<<std::flush;
+        // Ouptuting the following line in Slicer will cause too much overhead for Slicer python console, freezing the slicer. So comment out.
+        // std::cout<<"     DijkstraBasedClassificationAHP 333333333333\n"<<std::flush;
 
         hnMin = (HeapNodeWithPre *) m_heap->ExtractMin();
         index = hnMin->GetIndexValue();
